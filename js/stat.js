@@ -9,7 +9,7 @@ var SHADE_COLOR = 'rgba(0, 0, 0, 0.7)';
 var COLUMN_WIDTH = 40;
 var COLUMN_DISTANCE = COLUMN_WIDTH + 50;
 
-var renderCustomCloud = function (ctx, color, shift) {
+var drawFigure = function (ctx, color, shift) {
   ctx.beginPath();
   ctx.strokeStyle = '#000';
   ctx.fillStyle = color;
@@ -24,14 +24,17 @@ var renderCustomCloud = function (ctx, color, shift) {
   ctx.closePath();
 };
 
-var renderCloud = function (ctx, x, y, color, cloudType) {
-  if (cloudType === 1) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);
-  } else if (cloudType === 0) {
-    renderCustomCloud(ctx, SHADE_COLOR, 10);
-    renderCustomCloud(ctx, CLOUD_COLOR, 0);
-  }
+var renderCustomCloud = function (ctx, shade, color) {
+  drawFigure(ctx, shade, 10);
+  drawFigure(ctx, color, 0);
+};
+
+var renderCloud = function (ctx, x, y, shade, color) {
+  ctx.fillStyle = shade;
+  ctx.fillRect(x + 10, y + 10, CLOUD_WIDTH, CLOUD_HEIGHT);
+
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);
 };
 
 var renderColumn = function (ctx, x, y, height, color) {
@@ -42,10 +45,16 @@ var renderColumn = function (ctx, x, y, height, color) {
   ctx.fontSize = '16px';
 };
 
+var getRandomBlue = function () {
+  return Math.random() * 256;
+};
+
 window.renderStatistics = function (ctx, names, times) {
-  var rand = Math.round(Math.random());
-  renderCloud(ctx, 110, 20, SHADE_COLOR, rand);
-  renderCloud(ctx, 100, 10, CLOUD_COLOR, rand);
+  // Usual rect
+  renderCloud(ctx, 110, 20, SHADE_COLOR, CLOUD_COLOR);
+
+  // Custom cloud
+  // renderCustomCloud(ctx, SHADE_COLOR, CLOUD_COLOR);
 
   ctx.fillStyle = '#000';
   ctx.fontSize = '16px';
@@ -66,7 +75,7 @@ window.renderStatistics = function (ctx, names, times) {
 
   for (var i = 0; i < names.length; i++) {
     var height = times[i] === largestValue ? histHeight : times[i] * histHeight / largestValue;
-    var columnColor = names[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 0, ' + Math.random() * 256 + ', 1)';
+    var columnColor = names[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 0, ' + getRandomBlue() + ', 1)';
     var diff = histHeight - height;
 
     renderColumn(ctx, columnX, columnY + diff, height, columnColor);
