@@ -45,16 +45,21 @@ var renderColumn = function (ctx, x, y, height, color) {
   ctx.fontSize = '16px';
 };
 
-var getRandomBlue = function () {
-  return Math.random() * 256;
+var getRandomBlue = function (name) {
+  return name === 'Вы'
+    ? 'rgba(255, 0, 0, 1)'
+    : 'rgba(0, 0, ' + Math.random() * 256 + ', 1)';
 };
 
 window.renderStatistics = function (ctx, names, times) {
-  // Usual rect
-  renderCloud(ctx, 110, 20, SHADE_COLOR, CLOUD_COLOR);
-
-  // Custom cloud
-  // renderCustomCloud(ctx, SHADE_COLOR, CLOUD_COLOR);
+  var rand = Math.round(Math.random());
+  if (rand === 1) {
+    // Usual rect
+    renderCloud(ctx, 110, 20, SHADE_COLOR, CLOUD_COLOR);
+  } else if (rand === 0) {
+    // Custom cloud
+    renderCustomCloud(ctx, SHADE_COLOR, CLOUD_COLOR);
+  }
 
   ctx.fillStyle = '#000';
   ctx.fontSize = '16px';
@@ -74,13 +79,15 @@ window.renderStatistics = function (ctx, names, times) {
   }
 
   for (var i = 0; i < names.length; i++) {
-    var height = times[i] === largestValue ? histHeight : times[i] * histHeight / largestValue;
-    var columnColor = names[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 0, ' + getRandomBlue() + ', 1)';
+    var height =
+      times[i] === largestValue
+        ? histHeight
+        : times[i] * histHeight / largestValue;
     var diff = histHeight - height;
 
-    renderColumn(ctx, columnX, columnY + diff, height, columnColor);
+    renderColumn(ctx, columnX, columnY + diff, height, getRandomBlue(names[i]));
     ctx.fillText(names[i], columnX, columnY + histHeight + 20);
-    ctx.fillText(Math.round(times[i]), columnX, (columnY - 10) + diff);
+    ctx.fillText(Math.round(times[i]), columnX, columnY - 10 + diff);
     columnX += COLUMN_DISTANCE;
   }
 };
