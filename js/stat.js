@@ -9,25 +9,7 @@ var SHADE_COLOR = 'rgba(0, 0, 0, 0.7)';
 var COLUMN_WIDTH = 40;
 var COLUMN_DISTANCE = COLUMN_WIDTH + 50;
 
-var drawFigure = function (ctx, color, shift) {
-  ctx.beginPath();
-  ctx.strokeStyle = '#000';
-  ctx.fillStyle = color;
-  ctx.moveTo(100 + shift, 10 + shift);
-  ctx.lineTo(310 + shift, 15 + shift);
-  ctx.lineTo(520 + shift, 10 + shift);
-  ctx.lineTo(520 + shift, 270 + shift);
-  ctx.lineTo(310 + shift, 265 + shift);
-  ctx.lineTo(100 + shift, 270 + shift);
-  ctx.fill();
-  ctx.stroke();
-  ctx.closePath();
-};
-
-var renderCustomCloud = function (ctx, shade, color) {
-  drawFigure(ctx, shade, 10);
-  drawFigure(ctx, color, 0);
-};
+var HIST_HEIGHT = 150;
 
 var renderCloud = function (ctx, x, y, shade, color) {
   ctx.fillStyle = shade;
@@ -45,21 +27,45 @@ var renderColumn = function (ctx, x, y, height, color) {
   ctx.fontSize = '16px';
 };
 
-var getRandomBlue = function (name) {
+var getColumnColor = function (name) {
   return name === 'Вы'
     ? 'rgba(255, 0, 0, 1)'
     : 'rgba(0, 0, ' + Math.random() * 256 + ', 1)';
 };
 
-window.renderStatistics = function (ctx, names, times) {
-  var rand = Math.round(Math.random());
-  if (rand === 1) {
-    // Usual rect
-    renderCloud(ctx, 110, 20, SHADE_COLOR, CLOUD_COLOR);
-  } else if (rand === 0) {
-    // Custom cloud
-    renderCustomCloud(ctx, SHADE_COLOR, CLOUD_COLOR);
+var maxValue = 0;
+var getLargestValue = function (times) {
+  for (var j = 0; j < times.length; j++) {
+    if (times[j] > maxValue) {
+      maxValue = times[j];
+    }
   }
+  return maxValue;
+};
+
+var getColumnHeight = function (times, time, largestValue) {
+  return time === largestValue
+    ? HIST_HEIGHT
+    : time * HIST_HEIGHT / largestValue;
+};
+
+var renderAllColumns = function (ctx, names, times) {
+  var columnX = 150;
+  var columnY = 90;
+  var largestValue = getLargestValue(times);
+  for (var i = 0; i < names.length; i++) {
+    var columnHeight = getColumnHeight(times, times[i], largestValue);
+    var diff = HIST_HEIGHT - columnHeight;
+
+    renderColumn(ctx, columnX, columnY + diff, columnHeight, getColumnColor(names[i]));
+    ctx.fillText(names[i], columnX, columnY + HIST_HEIGHT + 20);
+    ctx.fillText(Math.round(times[i]), columnX, columnY - 10 + diff);
+    columnX += COLUMN_DISTANCE;
+  }
+};
+
+window.renderStatistics = function (ctx, names, times) {
+  renderCloud(ctx, 110, 20, SHADE_COLOR, CLOUD_COLOR);
 
   ctx.fillStyle = '#000';
   ctx.fontSize = '16px';
@@ -67,27 +73,5 @@ window.renderStatistics = function (ctx, names, times) {
   ctx.fillText('Список результатов:', 130, 60);
   ctx.fontFamily = 'PT Mono';
 
-  var columnX = 150;
-  var columnY = 90;
-  var largestValue = 0;
-  var histHeight = 150;
-
-  for (var j = 0; j < times.length; j++) {
-    if (times[j] > largestValue) {
-      largestValue = times[j];
-    }
-  }
-
-  for (var i = 0; i < names.length; i++) {
-    var height =
-      times[i] === largestValue
-        ? histHeight
-        : times[i] * histHeight / largestValue;
-    var diff = histHeight - height;
-
-    renderColumn(ctx, columnX, columnY + diff, height, getRandomBlue(names[i]));
-    ctx.fillText(names[i], columnX, columnY + histHeight + 20);
-    ctx.fillText(Math.round(times[i]), columnX, columnY - 10 + diff);
-    columnX += COLUMN_DISTANCE;
-  }
+  renderAllColumns(ctx, names, times);
 };
