@@ -1,10 +1,6 @@
 'use strict';
 
 (function () {
-  document.querySelector('.setup').classList.remove('hidden');
-
-  var wizards = [];
-
   var WIZARDS_QUANTITY = 4;
 
   var WIZARD_NAMES = [
@@ -36,6 +32,8 @@
     'rgb(0, 0, 0)'
   ];
   var WIZARD_EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
+
+  var wizards = [];
 
   var generateRandomNumber = function (arr) {
     return Math.floor(Math.random() * arr.length);
@@ -91,6 +89,7 @@
     list.appendChild(wizard);
   }
 
+  document.querySelector('.setup').classList.remove('hidden');
   document.querySelector('.setup-similar').classList.remove('hidden');
 
 })();
