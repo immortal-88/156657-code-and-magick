@@ -33,8 +33,8 @@
     .content.cloneNode(true);
 
   var ads = [];
-  var titlesCopy = TITLES.slice();
   var fragment = document.createDocumentFragment();
+  var shuffledTitlesCopy;
 
   var generateRandomNumber = function (min, max) {
     return Math.round(Math.random() * (max - min + 1) + min);
@@ -89,6 +89,7 @@
     }
   };
 
+  shuffledTitlesCopy = shuffleArray(TITLES);
   var createAd = function (index) {
     var randomX = generateRandomNumber(300, 900);
     var randomY = generateRandomNumber(130, 630);
@@ -101,7 +102,7 @@
         y: randomY
       },
       offer: {
-        title: shuffleArray(titlesCopy)[titlesCopy.length - 1],
+        title: shuffledTitlesCopy[index],
         address: randomX + ', ' + randomY,
         price: generateRandomNumber(1000, 1000000),
         type: getRandomArrayValue(TYPES),
@@ -119,7 +120,6 @@
   var generateAds = function () {
     for (var i = 0; i < ADS_QUANTITY; i++) {
       ads.push(createAd(i));
-      titlesCopy.splice(titlesCopy.length - 1, 1);
     }
   };
 
