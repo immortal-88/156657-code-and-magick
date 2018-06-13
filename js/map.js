@@ -88,8 +88,7 @@
       element.removeChild(element.firstChild);
     }
   };
-
-  shuffledTitlesCopy = shuffleArray(TITLES);
+  
   var createAd = function (index) {
     var randomX = generateRandomNumber(300, 900);
     var randomY = generateRandomNumber(130, 630);
@@ -118,6 +117,7 @@
   };
 
   var generateAds = function () {
+    shuffledTitlesCopy = shuffleArray(TITLES);
     for (var i = 0; i < ADS_QUANTITY; i++) {
       ads.push(createAd(i));
     }
