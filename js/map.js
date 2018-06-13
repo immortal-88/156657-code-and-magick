@@ -33,7 +33,7 @@
     .content.cloneNode(true);
 
   var ads = [];
-  var shuffledTitles = TITLES.slice(0, TITLES.length);
+  var shuffledTitles = TITLES.slice();
   var fragment = document.createDocumentFragment();
 
   var generateRandomNumber = function (min, max) {
@@ -53,7 +53,7 @@
   };
 
   var shuffleArray = function (arr) {
-    var copyArr = arr;
+    var copyArr = arr.slice();
     var counter = copyArr.length;
     while (counter > 0) {
       var index = Math.floor(Math.random() * counter);
@@ -123,35 +123,36 @@
     }
   };
 
-  var createPin = function (x, y, avatar, title) {
+  var createPin = function (ad) {
     var pin = copyTemplate.querySelector('.map__pin').cloneNode(true);
-    pin.style.left = x + 'px';
-    pin.style.top = y + 'px';
-    pin.querySelector('img').src = avatar;
-    pin.querySelector('img').alt = title;
+    var img = pin.querySelector('img');
+    pin.style.left = ad.location.x + 'px';
+    pin.style.top = ad.location.y + 'px';
+    img.src = ad.author.avatar;
+    img.alt = ad.offer.title;
     return pin;
   };
 
   var fillFeatures = function (features) {
-    for (var j = 0; j < ads[0].offer.features.length; j++) {
+    for (var i = 0; i < ads[0].offer.features.length; i++) {
       var feature = document.createElement('li');
-      feature.classList.add('popup__feature', 'popup__feature--' + ads[0].offer.features[j]);
+      feature.classList.add('popup__feature', 'popup__feature--' + ads[0].offer.features[i]);
       features.appendChild(feature);
     }
   };
 
-  var fillPhotos = function (photos) {
-    for (var k = 0; k < ads[0].offer.photos.length; k++) {
+  var fillPhotos = function (photosEl, photosArr) {
+    for (var i = 0; i < photosArr.length; i++) {
       var photo = document.createElement('img');
-      photo.src = ads[0].offer.photos[k];
+      photo.src = photosArr[i];
       photo.width = 45;
       photo.height = 40;
       photo.classList.add('popup__photo');
-      photos.appendChild(photo);
+      photosEl.appendChild(photo);
     }
   };
 
-  var fillArticle = function () {
+  var fillArticle = function (offers) {
     var templateMap = copyTemplate.querySelector('.map__card');
     var map = document.querySelector('.map');
     var mapFiltersContainer = document.querySelector('.map__filters-container');
@@ -168,29 +169,29 @@
     var photos = templateMap.querySelector('.popup__photos');
 
     templateMap.querySelector('.popup__title');
-    title.textContent = ads[0].offer.title;
-    address.textContent = ads[0].offer.address;
-    price.textContent = ads[0].offer.price + '₽/ночь';
-    type.textContent = selectType(ads[0].offer.type);
-    roomsAndGuests.textContent = ads[0].offer.rooms + ' комнаты для ' + ads[0].offer.guests + ' гостей';
-    checkTime.textContent = 'Заезд после ' + ads[0].offer.checkin + ', выезд до ' + ads[0].offer.checkout;
-    description.textContent = ads[0].offer.description;
+    title.textContent = offers.title;
+    address.textContent = offers.address;
+    price.textContent = offers.price + '₽/ночь';
+    type.textContent = selectType(offers.type);
+    roomsAndGuests.textContent = offers.rooms + ' комнаты для ' + offers.guests + ' гостей';
+    checkTime.textContent = 'Заезд после ' + offers.checkin + ', выезд до ' + offers.checkout;
+    description.textContent = offers.description;
     avatar.src = ads[Math.floor(Math.random() * ads.length)].author.avatar;
 
     clearFromChildren(features);
     clearFromChildren(photos);
 
     fillFeatures(features);
-    fillPhotos(photos);
+    fillPhotos(photos, offers.photos);
 
     map.insertBefore(templateMap, mapFiltersContainer);
   };
 
   generateAds();
-  fillArticle();
+  fillArticle(ads[0].offer);
 
   for (var i = 0; i < ads.length; i++) {
-    fragment.appendChild(createPin(ads[i].location.x, ads[i].location.y, ads[i].author.avatar, ads[i].offer.title));
+    fragment.appendChild(createPin(ads[i]));
   }
   pins.appendChild(fragment);
 
