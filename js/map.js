@@ -33,7 +33,7 @@
     .content.cloneNode(true);
 
   var ads = [];
-  var shuffledTitles = TITLES.slice();
+  var titlesCopy = TITLES.slice();
   var fragment = document.createDocumentFragment();
 
   var generateRandomNumber = function (min, max) {
@@ -53,16 +53,16 @@
   };
 
   var shuffleArray = function (arr) {
-    var copyArr = arr.slice();
-    var counter = copyArr.length;
+    var arrCopy = arr.slice();
+    var counter = arrCopy.length;
     while (counter > 0) {
       var index = Math.floor(Math.random() * counter);
       counter--;
-      var temp = copyArr[counter];
-      copyArr[counter] = copyArr[index];
-      copyArr[index] = temp;
+      var temp = arrCopy[counter];
+      arrCopy[counter] = arrCopy[index];
+      arrCopy[index] = temp;
     }
-    return copyArr;
+    return arrCopy;
   };
 
   var selectType = function (type) {
@@ -101,7 +101,7 @@
         y: randomY
       },
       offer: {
-        title: shuffleArray(shuffledTitles)[shuffledTitles.length - 1],
+        title: shuffleArray(titlesCopy)[titlesCopy.length - 1],
         address: randomX + ', ' + randomY,
         price: generateRandomNumber(1000, 1000000),
         type: getRandomArrayValue(TYPES),
@@ -119,17 +119,17 @@
   var generateAds = function () {
     for (var i = 0; i < ADS_QUANTITY; i++) {
       ads.push(createAd(i));
-      shuffledTitles.splice(shuffledTitles.length - 1, 1);
+      titlesCopy.splice(titlesCopy.length - 1, 1);
     }
   };
 
-  var createPin = function (ad) {
+  var createPin = function (offer) {
     var pin = copyTemplate.querySelector('.map__pin').cloneNode(true);
     var img = pin.querySelector('img');
-    pin.style.left = ad.location.x + 'px';
-    pin.style.top = ad.location.y + 'px';
-    img.src = ad.author.avatar;
-    img.alt = ad.offer.title;
+    pin.style.left = offer.location.x + 'px';
+    pin.style.top = offer.location.y + 'px';
+    img.src = offer.author.avatar;
+    img.alt = offer.offer.title;
     return pin;
   };
 
@@ -141,18 +141,18 @@
     }
   };
 
-  var fillPhotos = function (photosEl, photosArr) {
-    for (var i = 0; i < photosArr.length; i++) {
+  var fillPhotos = function (photosElement, photos) {
+    for (var i = 0; i < photos.length; i++) {
       var photo = document.createElement('img');
-      photo.src = photosArr[i];
+      photo.src = photos[i];
       photo.width = 45;
       photo.height = 40;
       photo.classList.add('popup__photo');
-      photosEl.appendChild(photo);
+      photosElement.appendChild(photo);
     }
   };
 
-  var fillArticle = function (offers) {
+  var fillArticle = function (offer) {
     var templateMap = copyTemplate.querySelector('.map__card');
     var map = document.querySelector('.map');
     var mapFiltersContainer = document.querySelector('.map__filters-container');
@@ -169,20 +169,20 @@
     var photos = templateMap.querySelector('.popup__photos');
 
     templateMap.querySelector('.popup__title');
-    title.textContent = offers.title;
-    address.textContent = offers.address;
-    price.textContent = offers.price + '₽/ночь';
-    type.textContent = selectType(offers.type);
-    roomsAndGuests.textContent = offers.rooms + ' комнаты для ' + offers.guests + ' гостей';
-    checkTime.textContent = 'Заезд после ' + offers.checkin + ', выезд до ' + offers.checkout;
-    description.textContent = offers.description;
+    title.textContent = offer.title;
+    address.textContent = offer.address;
+    price.textContent = offer.price + '₽/ночь';
+    type.textContent = selectType(offer.type);
+    roomsAndGuests.textContent = offer.rooms + ' комнаты для ' + offer.guests + ' гостей';
+    checkTime.textContent = 'Заезд после ' + offer.checkin + ', выезд до ' + offer.checkout;
+    description.textContent = offer.description;
     avatar.src = ads[Math.floor(Math.random() * ads.length)].author.avatar;
 
     clearFromChildren(features);
     clearFromChildren(photos);
 
     fillFeatures(features);
-    fillPhotos(photos, offers.photos);
+    fillPhotos(photos, offer.photos);
 
     map.insertBefore(templateMap, mapFiltersContainer);
   };
