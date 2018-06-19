@@ -38,12 +38,14 @@
   var ESC_KEY_CODE = 27;
 
   var wizards = [];
+  var isModalOpened = true;
 
   var setupOpen = document.querySelector('.setup-open');
   var setupDialog = document.querySelector('.setup');
   var setupClose = document.querySelector('.setup-close');
   var userIcon = document.querySelector('.setup-open-icon');
-  var setupSubmit = document.querySelector('.setup-submit');
+  var userName = document.querySelector('.setup-user-name');
+  var wizardAppearance = document.querySelector('.setup-wizard-appearance');
 
   var wizardCoat = document.querySelector('.wizard-coat');
   var wizardEyes = document.querySelector('.wizard-eyes');
@@ -117,16 +119,18 @@
     closeWindow();
   });
 
-  setupSubmit.addEventListener('click', function () {
-    setupDialog.submit();
-  });
-
   wizardCoat.addEventListener('click', function () {
-    wizardCoat.style.fill = getRandomColor();
+    var randomCoatColor = getRandomColor();
+    var coatInput = wizardAppearance.querySelector('input[name=coat-color]');
+    wizardCoat.style.fill = randomCoatColor;
+    coatInput.value = randomCoatColor;
   });
 
   wizardEyes.addEventListener('click', function () {
-    wizardEyes.style.fill = getRandomEyesColor();
+    var randomEyesColor = getRandomEyesColor();
+    var eyesInput = wizardAppearance.querySelector('input[name=eyes-color]');
+    wizardEyes.style.fill = randomEyesColor;
+    eyesInput.value = randomEyesColor;
   });
 
   wizardFireBall.addEventListener('click', function () {
@@ -145,17 +149,13 @@
     if (document.activeElement === userIcon) {
       if (evt.keyCode === ENTER_KEY_CODE) {
         openWindow();
+        isModalOpened = true;
       }
     }
-    if (window.open) {
-      if (
-        evt.keyCode === ESC_KEY_CODE ||
-        document.activeElement === setupClose
-      ) {
+    if (isModalOpened || document.activeElement !== userName) {
+      if (evt.keyCode === ESC_KEY_CODE || document.activeElement === setupClose) {
         closeWindow();
-      }
-      if (document.activeElement === setupSubmit) {
-        setupDialog.submit();
+        isModalOpened = false;
       }
     }
   });
